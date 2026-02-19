@@ -1,0 +1,16 @@
+*.db
+*.sqlite
+*.sqlite3
+data/
+
+__pycache__/
+*cache/
+*.py[cod]
+*.so
+.env
+venv/
+.venv/
+
+env/
+
+.vscode/
