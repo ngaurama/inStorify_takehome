@@ -129,7 +129,6 @@ os.chdir(BACKEND)
 
 if IS_WIN:
     subprocess.run(
-        str(uvicorn),
         [
             str(uvicorn),
             "app.main:app",
