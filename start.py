@@ -16,7 +16,6 @@ VENV = ROOT / ".venv"
 FRONTEND = ROOT / "frontend"
 BACKEND = ROOT / "backend"
 
-# resolve python/pip/uvicorn paths for the venv
 IS_WIN = sys.platform == "win32"
 VENV_BIN = VENV / ("Scripts" if IS_WIN else "bin")
 VENV_PY = VENV_BIN / "python"
@@ -40,7 +39,7 @@ def fail(msg):
 
 def run(cmd, cwd=None):
     """Run a command, exit on failure"""
-    result = subprocess.run(cmd, cwd=cwd)
+    result = subprocess.run(cmd, cwd=cwd, shell=IS_WIN)
     if result.returncode != 0:
         fail(f"command failed: {' '.join(str(c) for c in cmd)}")
 
@@ -114,6 +113,7 @@ if lan_url:
 env_file.write_text("".join(lines))
 ok(".env written")
 
+
 # serve
 
 print()
@@ -126,14 +126,28 @@ print()
 
 uvicorn = VENV_BIN / ("uvicorn.exe" if IS_WIN else "uvicorn")
 os.chdir(BACKEND)
-os.execv(
-    str(uvicorn),
-    [
+
+if IS_WIN:
+    subprocess.run(
         str(uvicorn),
-        "app.main:app",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "8000"
-    ]
-)
+        [
+            str(uvicorn),
+            "app.main:app",
+            "--host",
+            "0.0.0.0",
+            "--port",
+            "8000"
+        ]
+    )
+else:
+    os.execv(
+        str(uvicorn),
+        [
+            str(uvicorn),
+            "app.main:app",
+            "--host",
+            "0.0.0.0",
+            "--port",
+            "8000"
+        ]
+    )
